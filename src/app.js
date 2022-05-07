@@ -57,7 +57,18 @@ app.put("/repositories/:id", (request, response) => {
 });
 
 app.delete("/repositories/:id", (request, response) => {
-  // TODO
+  const id = request.params.id;
+
+  const index = repositories.findIndex(repo => repo.id === id)
+
+  if(index < 0){
+    
+    return response.status(400).json({ error: 'Repositório não encontrado'  })
+  }
+
+  repositories.splice(index, 1)
+
+  return response.json({ message: 'Excluido com sucesso' });
 });
 
 app.post("/repositories/:id/like", (request, response) => {
