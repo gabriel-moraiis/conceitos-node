@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const { uuid, isUuid } = require('uuidv4');
+const res = require("express/lib/response");
 
 
 
@@ -20,16 +21,17 @@ app.get("/repositories", (request, response) => {
 
 app.post("/repositories", (request, response) => {
 
-  const { title, url, techs } = request.body;
+  let { title, url, techs } = request.body;
+  let likes = 0
 
   
 
-  const repositorie = {
+  let repositorie = {
     id: uuid(),
     title,
     url,
     techs,
-    likes: 0,
+    likes
   }
 
   repositories.push(repositorie);
@@ -68,11 +70,25 @@ app.delete("/repositories/:id", (request, response) => {
 
   repositories.splice(index, 1)
 
-  return response.json({ message: 'Excluido com sucesso' });
+  return response.status(204).json();
 });
 
 app.post("/repositories/:id/like", (request, response) => {
-  // TODO
+  
+  const id = request.params.id
+
+  const index = repositories.findIndex(repo => repo.id === id)
+
+  if(index >= 0){
+  repositories[index].likes++
+  }
+
+  if(index < 0){
+    return response.status(400).json({message: 'repositorio nao existente'})
+  }
+  
+  return response.json(repositories[index])
+
 });
 
 module.exports = app;
